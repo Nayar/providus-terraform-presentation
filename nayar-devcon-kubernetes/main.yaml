@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+      - name: migratedb
+        image: providusnayar/nayar-devcon-database:1.1
+        #command: [""]
+        args: ["liquibase","update"]
+      containers:
+      - name: backend
+        image: providusnayar/backend:1.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-services 
+spec: 
+  type: NodePort
+  selector:
+    app: backend # Selects Pods labelled run: frontend-services
+  ports:
+    - port: 80 # Service's port
+      protocol: TCP
+      targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend-services-ing
+  annotations:
+    #kubernetes.io/ingress.allow-http: "false"
+spec:
+  backend:
+    serviceName: backend-services  # Name of the Service targeted by the Ingress
+    servicePort: 80 # Should match the port used by the Service
