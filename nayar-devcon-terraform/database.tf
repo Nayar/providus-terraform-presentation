@@ -7,11 +7,11 @@ resource "google_sql_database_instance" "master" {
     tier = "db-f1-micro"
     availability_type = "REGIONAL"
     
-    ip_configuration {
-        authorized_networks {
-            value = "0.0.0.0/0" # <<<< Dangerous
-        }
-    }
+    #ip_configuration {
+        #authorized_networks {
+        #    value = "0.0.0.0/0" # <<<< Dangerous
+        #}
+    #}
   }
 } 
 
